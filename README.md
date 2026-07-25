@@ -2,6 +2,23 @@
 
 Note: 128M SDRAM module is needed for the X16 core.
 
+## version 1.4 :
+
+**The Pause/Break key now works as the X16 `STOP` key.** MiSTer's HPS delivers
+the physical **Pause** key as extended scancode `$77` and never sends a release
+event for it, so the core previously ignored it (and would have left it stuck
+down). Pause is now mapped to IBM keycode 126 (`STOP` / `Break`) and the
+key-up is synthesized right after the key-down, so **Pause breaks a running
+BASIC program** just like on real hardware.
+
+**Ctrl + Alt + Pause = RESTORE (BASIC warm start).** Pause joins `PrtScr` /
+`SysRq` as an NMI trigger: holding **Ctrl + Alt** and pressing **Pause** fires
+the KERNAL warm-start vector, returning a wedged program to `READY.` **without
+clearing the BASIC program in RAM** — the equivalent of `RUN/STOP` + `RESTORE`
+on a Commodore. (**Ctrl + Alt + Del** still cold-resets the machine.)
+
+*(Contributed by jnngill.)*
+
 ## version 1.3 :
 
 **Serial / network card — dual UART + ROMTERM fixes.** The serial/network card
@@ -119,7 +136,7 @@ strange bugs to resolve. It worked only after switching to Claude MAX with Fable
 
 | File                     | Description                   | Where to put it |
 |--------------------------|-------------------------------|-----------------|
-| `/rom/X16_20260723.rbf`  | version 1.3 no baked ROM      | `_Computer/`    |
+| `/rom/X16_20260724.rbf`  | version 1.4 no baked ROM      | `_Computer/`    |
 | your own boot1.rom       | tested with R49               | `games/X16/`    |
 
 (The published `.rbf` contains **no ROM** — the X16 ROM is not ours to
