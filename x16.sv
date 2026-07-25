@@ -145,7 +145,7 @@ module emu
         "O[3],Cart Banks 32+,By Cart,All RAM;", // status[3]: 0=By Cart (per-bank ROM/RAM from the mount's mask; no cart = ROM), 1=All RAM (force every cart bank 32-255 writable regardless, no cart needed)
         "-;",
         "J1,A,B,X,Y,L,R,Select,Start;",  // SNES pad buttons -> joy[4..11]
-        "V,v1.3"
+        "V,v1.4"
     };
 
     wire [127:0] status;
