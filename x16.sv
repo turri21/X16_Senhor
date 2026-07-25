@@ -53,7 +53,7 @@ module emu
         .rst               (1'b0),
         .outclk_0          (pix_clk),     // 25.0 MHz  (VERA VGA)
         .outclk_1          (aud_mclk),    // 12.5 MHz  (IKAOPM)
-        .outclk_2          (cpu_clk),     // 8.0 MHz   (CPU + VIA + I2C)
+        .outclk_2          (cpu_clk),     // 8.0 MHz   (Peripherals, VIA, I2C, SPI)
         .outclk_3          (sdram_clk),   // 100.0 MHz (SDRAM controller)
         .locked            (pll_locked)
     );

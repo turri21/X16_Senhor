@@ -66,6 +66,15 @@ module tb_smccombo;
         repeat (30) @(posedge clk);
     end endtask
 
+    // capture the bridge's byte stream so a whole emitted sequence can be
+    // checked (Pause: make + the synthesized break)
+    reg [7:0] cap [0:15];
+    integer   ncap = 0;
+    always @(posedge clk) if (uart_byte_valid && ncap < 16) begin
+        cap[ncap] = uart_byte;
+        ncap      = ncap + 1;
+    end
+
     task expect_pulse(input rst_e, input nmi_e, input [255:0] what); begin
         if (saw_rst !== rst_e) begin
             $display("[CMB ] FAIL %0s: reset_req=%b exp %b", what, saw_rst, rst_e);
@@ -124,6 +133,26 @@ module tb_smccombo;
         key(1'b1, 1'b1, 8'h71);
         key(1'b1, 1'b0, 8'h71);
         expect_pulse(0, 0, "Del alone");
+
+        // --- Pause (ext $77, PR #4): hps_io sends make only, so the bridge
+        //     must synthesize the break -> E0 77 E0 F0 77 ---
+        ncap = 0;
+        key(1'b1, 1'b1, 8'h77);
+        if (ncap !== 5 || cap[0] !== 8'hE0 || cap[1] !== 8'h77 ||
+            cap[2] !== 8'hE0 || cap[3] !== 8'hF0 || cap[4] !== 8'h77) begin
+            $display("[CMB ] FAIL Pause seq: n=%0d %02h %02h %02h %02h %02h",
+                     ncap, cap[0], cap[1], cap[2], cap[3], cap[4]);
+            errors = errors + 1;
+        end
+        expect_pulse(0, 0, "Pause alone");
+
+        // --- Ctrl+Alt+Pause -> NMI (RESTORE warm start) ---
+        key(1'b0, 1'b1, 8'h14);            // LCtrl make
+        key(1'b0, 1'b1, 8'h11);            // LAlt make
+        key(1'b1, 1'b1, 8'h77);            // Pause
+        expect_pulse(0, 1, "Ctrl+Alt+Pause");
+        key(1'b0, 1'b0, 8'h14);
+        key(1'b0, 1'b0, 8'h11);
 
         // --- normal keys still flow into the FIFO ---
         if (kbd_count == 5'd0) begin
