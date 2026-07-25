@@ -1,3 +1,8 @@
+-=(Commander-X16_Senhor notes)=-
+
+Tested: Working Video 720p, 1080p & Sound.
+
+___
 # Commander X16 for [MiSTer](https://github.com/MiSTer-devel/Main_MiSTer/wiki)
 
 Note: 128M SDRAM module is needed for the X16 core.
